@@ -13,25 +13,66 @@
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2, true);
 
-	pros::Motor left_arm_mtr(3);
+using namespace okapi;
+
+// motor ports
+const int DRIVE_MOTOR_LEFT = 1;
+const int DRIVE_MOTOR_RIGHT = 2;
+const int LIFT_MOTOR = 3;
+
+// dimensions used for tracking position
+const auto WHEEL_DIAMETER = 7_cm;
+const auto CHASSIS_WIDTH = 40_cm;
+
+auto drive = ChassisControllerFactory::create(
+	DRIVE_MOTOR_LEFT, DRIVE_MOTOR_RIGHT,
+	AbstractMotor::gearset::green,
+	{WHEEL_DIAMETER, CHASSIS_WIDTH}
+);
+
+// control of lift motors async from main loop
+auto liftControl = AsyncControllerFactory::posIntegrated(LIFT_MOTOR);
+
+// predefined heights for lift
+const int NUM_HEIGHTS = 4;
+const int height1 = 0;
+const int height2 = 20;
+const int height3 = 40;
+const int height4 = 60;
+const int heights[NUM_HEIGHTS] = {height1, height2, height3, height4};
+
+// buttons for controlling lift
+ControllerButton btnUp(ControllerDigital::R1);
+ControllerButton btnDown(ControllerDigital::R2);
+
+void opcontrol() {
+	// joystick input
+	// defaults to master
+	Controller controller;
+
+	// value to track the current goal height
+	int goalHeight = 0;
 
 	while (true) {
+		// print to lcd screen
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		//int left = master.get_analog(ANALOG_LEFT_Y);
-		//int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		//left_mtr = left;
-		//right_mtr = right;
+		// drive tank controls
+		drive.tank(controller.getAnalog(ControllerAnalog::leftY),
+				   controller.getAnalog(ControllerAnalog::rightY));
 
-		int arm_speed = master.get_analog(ANALOG_RIGHT_Y);
-		left_arm_mtr = arm_speed;
+		// logic for controlling lift with buttons
+		// set the target height
+		if (btnUp.changedToPressed() && goalHeight < NUM_HEIGHTS - 1) {
+			goalHeight++;
+			liftControl.setTarget(heights[goalHeight]);
+		} else if (btnDown.changedToPressed() && goalHeight > 0) {
+			goalHeight--;
+			liftControl.setTarget(heights[NUM_HEIGHTS]);
+		}
 
 		pros::delay(20);
 	}
