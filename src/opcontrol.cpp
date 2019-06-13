@@ -1,4 +1,5 @@
 #include "main.h"
+#include <string>
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -17,11 +18,19 @@
 using namespace okapi;
 
 // motor ports
-const Motor DRIVE_MOTOR_RIGHT = 1_rmtr;
-const Motor DRIVE_MOTOR_LEFT = 2_mtr;
-const Motor LIFT_MOTOR_RIGHT = 3_mtr;
-const Motor LIFT_MOTOR_LEFT = 4_rmtr;
-const MotorGroup LIFT_MOTOR_GROUP({LIFT_MOTOR_LEFT, LIFT_MOTOR_RIGHT});
+const int DRIVE_MOTOR_RIGHT = 1;
+const int DRIVE_MOTOR_LEFT = 2;
+const int LIFT_MOTOR_RIGHT = 3;
+const int LIFT_MOTOR_LEFT = 4;
+
+// motors
+Motor driveLeftMotor(-DRIVE_MOTOR_RIGHT);
+Motor driveRightMotor(DRIVE_MOTOR_LEFT);
+Motor liftLeftMotor(LIFT_MOTOR_LEFT);
+Motor liftRightMotor(-DRIVE_MOTOR_RIGHT);
+
+// motor groups
+const MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
 
 // dimensions used for tracking position
 const auto WHEEL_DIAMETER = 10_cm;
@@ -34,7 +43,7 @@ auto drive = ChassisControllerFactory::create(
 );
 
 // control of lift motors async from main loop
-auto liftControl = AsyncControllerFactory::posIntegrated(LIFT_MOTOR_GROUP);
+auto liftControl = AsyncControllerFactory::posIntegrated(liftMotorGroup);
 
 // predefined heights for lift
 const int NUM_HEIGHTS = 4;
@@ -46,8 +55,9 @@ const int heights[NUM_HEIGHTS] = {height1, height2, height3, height4};
 const int armGearRatio = 7;
 
 // buttons for controlling lift
-ControllerButton btnUp(ControllerDigital::R1);
-ControllerButton btnDown(ControllerDigital::R2);
+ControllerButton btnUp(ControllerDigital::up);
+ControllerButton btnDown(ControllerDigital::down);
+ControllerButton driveMode(ControllerDigital::R1);
 
 void opcontrol() {
 	// joystick input
@@ -62,18 +72,18 @@ void opcontrol() {
 //	leftLiftControl.setMaxVelocity(maxAngularVelocity);
 //	rightLiftControl.setMaxVelocity(maxAngularVelocity);
 
+	// count of update cycles
+	int count = 0;
+
 	while (true) {
 		// print to lcd screen
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
-		controller.clearLine(1);
-		controller.setText(1, 0, "Hello");
-
 		// drive tank controls
 		drive.tank(controller.getAnalog(ControllerAnalog::leftY),
-				   controller.getAnalog(ControllerAnalog::rightY));
+				controller.getAnalog(ControllerAnalog::rightY));
 
 		// logic for controlling lift with buttons
 		// set the target height
@@ -85,6 +95,12 @@ void opcontrol() {
 			liftControl.setTarget(heights[goalHeight] * armGearRatio);
 		}
 
-		pros::delay(20);
+		// controller lcd
+		// issue: it don't work
+		if (!(count % 100)) {
+			controller.setText(0, 0, "height: " + heights[goalHeight]);
+		}
+
+		pros::delay(2);
 	}
 }
