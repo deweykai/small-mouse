@@ -17,13 +17,13 @@
 using namespace okapi;
 
 // motor ports
-const int DRIVE_MOTOR_LEFT = 1;
-const int DRIVE_MOTOR_RIGHT = 2;
+const int DRIVE_MOTOR_LEFT = 2;
+const int DRIVE_MOTOR_RIGHT = 1;
 const int LIFT_MOTOR = 3;
 
 // dimensions used for tracking position
-const auto WHEEL_DIAMETER = 7_cm;
-const auto CHASSIS_WIDTH = 40_cm;
+const auto WHEEL_DIAMETER = 10_cm;
+const auto CHASSIS_WIDTH = 37_cm;
 
 auto drive = ChassisControllerFactory::create(
 	DRIVE_MOTOR_LEFT, DRIVE_MOTOR_RIGHT,
