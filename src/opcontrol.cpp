@@ -22,12 +22,14 @@ const int DRIVE_MOTOR_RIGHT = 1;
 const int DRIVE_MOTOR_LEFT = 2;
 const int LIFT_MOTOR_RIGHT = 3;
 const int LIFT_MOTOR_LEFT = 4;
+const int MIDDLE_MOTOR = 5;
 
 // motors
 Motor driveLeftMotor(-DRIVE_MOTOR_RIGHT);
 Motor driveRightMotor(DRIVE_MOTOR_LEFT);
 Motor liftLeftMotor(LIFT_MOTOR_LEFT);
 Motor liftRightMotor(-DRIVE_MOTOR_RIGHT);
+Motor middleMotor(MIDDLE_MOTOR);
 
 // motor groups
 const MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
@@ -84,6 +86,9 @@ void opcontrol() {
 		// drive tank controls
 		drive.tank(controller.getAnalog(ControllerAnalog::leftY),
 				controller.getAnalog(ControllerAnalog::rightY));
+
+
+		middleMotor.setVelocity(controller.getAnalog(ControllerAnalog::rightX));
 
 		// logic for controlling lift with buttons
 		// set the target height
