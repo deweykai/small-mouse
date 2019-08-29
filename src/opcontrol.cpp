@@ -25,11 +25,11 @@ const int LIFT_MOTOR_LEFT = 4;
 const int MIDDLE_MOTOR = 5;
 
 // motors
-Motor driveLeftMotor(-DRIVE_MOTOR_RIGHT);
-Motor driveRightMotor(DRIVE_MOTOR_LEFT);
-Motor liftLeftMotor(LIFT_MOTOR_LEFT);
-Motor liftRightMotor(-DRIVE_MOTOR_RIGHT);
-Motor middleMotor(MIDDLE_MOTOR);
+Motor driveLeftMotor(DRIVE_MOTOR_LEFT);
+Motor driveRightMotor(-DRIVE_MOTOR_RIGHT);
+Motor liftLeftMotor(-LIFT_MOTOR_LEFT);
+Motor liftRightMotor(LIFT_MOTOR_RIGHT);
+pros::Motor middleMotor(MIDDLE_MOTOR);
 
 // motor groups
 const MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
@@ -39,7 +39,7 @@ const auto WHEEL_DIAMETER = 10_cm;
 const auto CHASSIS_WIDTH = 37_cm;
 
 auto drive = ChassisControllerFactory::create(
-	DRIVE_MOTOR_LEFT, DRIVE_MOTOR_RIGHT,
+	DRIVE_MOTOR_LEFT, -DRIVE_MOTOR_RIGHT,
 	AbstractMotor::gearset::green,
 	{WHEEL_DIAMETER, CHASSIS_WIDTH}
 );
@@ -49,11 +49,11 @@ auto liftControl = AsyncControllerFactory::posIntegrated(liftMotorGroup);
 
 // predefined heights for lift
 const int NUM_HEIGHTS = 4;
-const int height1 = 0;
-const int height2 = 20;
-const int height3 = 40;
-const int height4 = 90;
-const int heights[NUM_HEIGHTS] = {height1, height2, height3, height4};
+const int height0 = 0;
+const int height1 = 20;
+const int height2 = 40;
+const int height3 = 90;
+const int heights[NUM_HEIGHTS] = {height0, height1, height2, height3};
 const int armGearRatio = 7;
 
 // buttons for controlling lift
@@ -65,17 +65,28 @@ void opcontrol() {
 	// joystick input
 	// defaults to master
 	Controller controller;
+	pros::Controller master(CONTROLLER_MASTER);
 
 	// value to track the current goal height
 	int goalHeight = 0;
 
-	// set max angular velocity for arms
-//	int maxAngularVelocity = 1;
-//	leftLiftControl.setMaxVelocity(maxAngularVelocity);
-//	rightLiftControl.setMaxVelocity(maxAngularVelocity);
-
 	// count of update cycles
 	int count = 0;
+
+	// lift motor test:
+	if (false) {
+		pros::Motor leftMotor (LIFT_MOTOR_LEFT);
+		pros::Motor rightMotor (LIFT_MOTOR_RIGHT);
+		leftMotor.move(50);
+		rightMotor.move(50);
+		pros::delay(1000);
+		leftMotor.move(0);
+		rightMotor.move(0);
+	}
+
+	// set max angular velocity for arms
+	int maxAngularVelocity = 80;
+	liftControl.setMaxVelocity(maxAngularVelocity);
 
 	while (true) {
 		// print to lcd screen
@@ -87,8 +98,18 @@ void opcontrol() {
 		drive.tank(controller.getAnalog(ControllerAnalog::leftY),
 				controller.getAnalog(ControllerAnalog::rightY));
 
-
-		middleMotor.setVelocity(controller.getAnalog(ControllerAnalog::rightX));
+		// move the middle motor
+		int middleMotorPower = 0;
+		int turbo = master.get_digital(DIGITAL_X);
+		if (master.get_digital(DIGITAL_LEFT)) {
+			middleMotorPower = -50;
+		} else if (master.get_digital(DIGITAL_RIGHT)) {
+			middleMotorPower = 50;
+		}
+		if (turbo) {
+			middleMotorPower *= 2;
+		}
+		middleMotor.move(middleMotorPower);
 
 		// logic for controlling lift with buttons
 		// set the target height
@@ -106,6 +127,6 @@ void opcontrol() {
 			controller.setText(0, 0, "height: " + heights[goalHeight]);
 		}
 
-		pros::delay(2);
+		pros::delay(10);
 	}
 }
