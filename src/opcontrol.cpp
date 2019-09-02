@@ -44,21 +44,12 @@ auto drive = ChassisControllerFactory::create(
 	{WHEEL_DIAMETER, CHASSIS_WIDTH}
 );
 
-// control of lift motors async from main loop
-auto liftControl = AsyncControllerFactory::posIntegrated(liftMotorGroup);
-
-// predefined heights for lift
-const int NUM_HEIGHTS = 4;
-const int height0 = 0;
-const int height1 = 20;
-const int height2 = 40;
-const int height3 = 90;
-const int heights[NUM_HEIGHTS] = {height0, height1, height2, height3};
-const int armGearRatio = 7;
+// control of lift motors position async from main loop
+auto liftControlVel = AsyncControllerFactory::velIntegrated(liftMotorGroup);
 
 // buttons for controlling lift
-ControllerButton btnUp(ControllerDigital::up);
-ControllerButton btnDown(ControllerDigital::down);
+ControllerButton btnUp(ControllerDigital::L1);
+ControllerButton btnDown(ControllerDigital::L2);
 ControllerButton driveMode(ControllerDigital::R1);
 
 void opcontrol() {
@@ -66,9 +57,6 @@ void opcontrol() {
 	// defaults to master
 	Controller controller;
 	pros::Controller master(CONTROLLER_MASTER);
-
-	// value to track the current goal height
-	int goalHeight = 0;
 
 	// count of update cycles
 	int count = 0;
@@ -83,10 +71,6 @@ void opcontrol() {
 		leftMotor.move(0);
 		rightMotor.move(0);
 	}
-
-	// set max angular velocity for arms
-	int maxAngularVelocity = 80;
-	liftControl.setMaxVelocity(maxAngularVelocity);
 
 	while (true) {
 		// print to lcd screen
@@ -112,19 +96,14 @@ void opcontrol() {
 		middleMotor.move(middleMotorPower);
 
 		// logic for controlling lift with buttons
-		// set the target height
-		if (btnUp.changedToPressed() && goalHeight < NUM_HEIGHTS - 1) {
-			goalHeight++;
-			liftControl.setTarget(heights[goalHeight] * armGearRatio);
-		} else if (btnDown.changedToPressed() && goalHeight > 0) {
-			goalHeight--;
-			liftControl.setTarget(heights[goalHeight] * armGearRatio);
-		}
-
-		// controller lcd
-		// issue: it don't work
-		if (!(count % 100)) {
-			controller.setText(0, 0, "height: " + heights[goalHeight]);
+		// manual control
+		int moveVelocity = 75;
+		if (btnUp.isPressed()) {
+			liftControlVel.setTarget(moveVelocity);
+		} else if (btnDown.isPressed()) {
+			liftControlVel.setTarget(-moveVelocity);
+		} else {
+			liftControlVel.setTarget(0);
 		}
 
 		pros::delay(10);
