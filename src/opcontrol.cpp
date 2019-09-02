@@ -32,7 +32,7 @@ Motor liftRightMotor(LIFT_MOTOR_RIGHT);
 pros::Motor middleMotor(MIDDLE_MOTOR);
 
 // motor groups
-const MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
+MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
 
 // dimensions used for tracking position
 const auto WHEEL_DIAMETER = 10_cm;
@@ -45,12 +45,13 @@ auto drive = ChassisControllerFactory::create(
 );
 
 // control of lift motors position async from main loop
-auto liftControlVel = AsyncControllerFactory::velIntegrated(liftMotorGroup);
+//auto liftControlVel = AsyncControllerFactory::velIntegrated(liftMotorGroup);
 
 // buttons for controlling lift
 ControllerButton btnUp(ControllerDigital::L1);
 ControllerButton btnDown(ControllerDigital::L2);
 ControllerButton driveMode(ControllerDigital::R1);
+ControllerButton resetLift(ControllerDigital::down);
 
 void opcontrol() {
 	// joystick input
@@ -97,13 +98,14 @@ void opcontrol() {
 
 		// logic for controlling lift with buttons
 		// manual control
-		int moveVelocity = 75;
 		if (btnUp.isPressed()) {
-			liftControlVel.setTarget(moveVelocity);
+			liftMotorGroup.moveVoltage(5000);
 		} else if (btnDown.isPressed()) {
-			liftControlVel.setTarget(-moveVelocity);
+			liftMotorGroup.moveVoltage(-1500);
+		} else if (resetLift.isPressed()) {
+			liftMotorGroup.moveAbsolute(0, 60);
 		} else {
-			liftControlVel.setTarget(0);
+			liftMotorGroup.moveVoltage(0);
 		}
 
 		pros::delay(10);
