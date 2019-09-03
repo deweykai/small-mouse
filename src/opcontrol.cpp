@@ -29,7 +29,7 @@ Motor driveLeftMotor(DRIVE_MOTOR_LEFT);
 Motor driveRightMotor(-DRIVE_MOTOR_RIGHT);
 Motor liftLeftMotor(-LIFT_MOTOR_LEFT);
 Motor liftRightMotor(LIFT_MOTOR_RIGHT);
-pros::Motor middleMotor(MIDDLE_MOTOR);
+Motor middleMotor(MIDDLE_MOTOR);
 
 // motor groups
 MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
@@ -94,7 +94,7 @@ void opcontrol() {
 		if (turbo) {
 			middleMotorPower *= 2;
 		}
-		middleMotor.move(middleMotorPower);
+		middleMotor.moveVelocity(middleMotorPower);
 
 		// logic for controlling lift with buttons
 		// manual control
