@@ -23,6 +23,7 @@ const int DRIVE_MOTOR_LEFT = 2;
 const int LIFT_MOTOR_RIGHT = 3;
 const int LIFT_MOTOR_LEFT = 4;
 const int MIDDLE_MOTOR = 5;
+const int CLAW_MOTOR = 6;
 
 // motors
 Motor driveLeftMotor(DRIVE_MOTOR_LEFT);
@@ -30,6 +31,7 @@ Motor driveRightMotor(-DRIVE_MOTOR_RIGHT);
 Motor liftLeftMotor(-LIFT_MOTOR_LEFT);
 Motor liftRightMotor(LIFT_MOTOR_RIGHT);
 Motor middleMotor(MIDDLE_MOTOR);
+Motor clawMotor(CLAW_MOTOR);
 
 // motor groups
 MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor});
@@ -44,14 +46,14 @@ auto drive = ChassisControllerFactory::create(
 	{WHEEL_DIAMETER, CHASSIS_WIDTH}
 );
 
-// control of lift motors position async from main loop
-//auto liftControlVel = AsyncControllerFactory::velIntegrated(liftMotorGroup);
-
+// buttons
 // buttons for controlling lift
 ControllerButton btnUp(ControllerDigital::L1);
 ControllerButton btnDown(ControllerDigital::L2);
-ControllerButton driveMode(ControllerDigital::R1);
 ControllerButton resetLift(ControllerDigital::down);
+// buttons for claw
+ControllerButton btnOpen(ControllerDigital::R2);
+ControllerButton btnClose(ControllerDigital::R1);
 
 void opcontrol() {
 	// joystick input
@@ -99,13 +101,22 @@ void opcontrol() {
 		// logic for controlling lift with buttons
 		// manual control
 		if (btnUp.isPressed()) {
-			liftMotorGroup.moveVoltage(5000);
+			liftMotorGroup.moveVoltage(10000);
 		} else if (btnDown.isPressed()) {
-			liftMotorGroup.moveVoltage(-1500);
+			liftMotorGroup.moveVoltage(0);
 		} else if (resetLift.isPressed()) {
 			liftMotorGroup.moveAbsolute(0, 60);
 		} else {
-			liftMotorGroup.moveVoltage(0);
+			liftMotorGroup.moveVoltage(1000);
+		}
+
+		// control for the claw motor
+		if (btnOpen.isPressed()) {
+			clawMotor.moveVoltage(5000);
+		} else if (btnClose.isPressed()) {
+			clawMotor.moveVoltage(-10000);
+		} else {
+			clawMotor.moveVoltage(0);
 		}
 
 		pros::delay(10);
