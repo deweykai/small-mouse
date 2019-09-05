@@ -105,9 +105,9 @@ void opcontrol() {
 		// logic for controlling lift with buttons
 		// manual control
 		if (btnUp.isPressed()) {
-			liftMotorGroup.moveVoltage(10000);
+			liftMotorGroup.moveVoltage(12000);
 		} else if (btnDown.isPressed()) {
-			liftMotorGroup.moveVoltage(0);
+			liftMotorGroup.moveVoltage(-3000);
 		} else if (resetLift.isPressed()) {
 			liftMotorGroup.moveAbsolute(0, 60);
 		} else {
@@ -116,9 +116,9 @@ void opcontrol() {
 
 		// control for the claw motor
 		if (btnOpen.isPressed()) {
-			clawMotor.moveVoltage(5000);
+			clawMotor.moveVoltage(12000);
 		} else if (btnClose.isPressed()) {
-			clawMotor.moveVoltage(-10000);
+			clawMotor.moveVoltage(-12000);
 		} else {
 			clawMotor.moveVoltage(0);
 		}
