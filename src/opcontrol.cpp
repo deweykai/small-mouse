@@ -22,8 +22,8 @@ const int DRIVE_MOTOR_RIGHT = 1;
 const int DRIVE_MOTOR_LEFT = 2;
 const int LIFT_MOTOR_RIGHT = 3;
 const int LIFT_MOTOR_LEFT = 4;
-const int MIDDLE_MOTOR = 5;
-const int CLAW_MOTOR = 6;
+const int MIDDLE_MOTOR = 7;
+const int CLAW_MOTOR = 8;
 
 // motors
 Motor driveLeftMotor(DRIVE_MOTOR_LEFT);
