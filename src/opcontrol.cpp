@@ -18,6 +18,8 @@
 
 // buttons
 // buttons for controlling lift
+using okapi::ControllerButton;
+using okapi::ControllerDigital;
 ControllerButton btnUp(ControllerDigital::L1);
 ControllerButton btnDown(ControllerDigital::L2);
 ControllerButton resetLift(ControllerDigital::down);
@@ -26,9 +28,12 @@ ControllerButton btnOpen(ControllerDigital::R2);
 ControllerButton btnClose(ControllerDigital::R1);
 
 void opcontrol() {
+	auto drive = okapi::ChassisControllerFactory::create(
+		DRIVE_MOTOR_LEFT, -DRIVE_MOTOR_RIGHT
+	);
 	// joystick input
 	// defaults to master
-	Controller controller;
+	okapi::Controller controller;
 	pros::Controller master(CONTROLLER_MASTER);
 
 	// count of update cycles
@@ -45,6 +50,8 @@ void opcontrol() {
 		rightMotor.move(0);
 	}
 
+	autonomous();
+
 	while (true) {
 		// print to lcd screen
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -52,8 +59,11 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		// drive tank controls
-		drive.tank(controller.getAnalog(ControllerAnalog::leftY),
-				controller.getAnalog(ControllerAnalog::rightY));
+		{
+			using okapi::ControllerAnalog;
+			drive.tank(controller.getAnalog(ControllerAnalog::leftY),
+					controller.getAnalog(ControllerAnalog::rightY));
+		}
 
 		// move the middle motor
 		int middleMotorPower = 0;
