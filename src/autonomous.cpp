@@ -24,5 +24,5 @@ void autonomous() {
         {WHEEL_DIAMETER, CHASSIS_WIDTH}
     );
     
-    drive.moveDistance(10);
+    drive.moveDistance(100_cm);
 }

@@ -28,9 +28,11 @@ ControllerButton btnOpen(ControllerDigital::R2);
 ControllerButton btnClose(ControllerDigital::R1);
 
 void opcontrol() {
+	// drive controls
 	auto drive = okapi::ChassisControllerFactory::create(
 		DRIVE_MOTOR_LEFT, -DRIVE_MOTOR_RIGHT
 	);
+
 	// joystick input
 	// defaults to master
 	okapi::Controller controller;
@@ -50,7 +52,7 @@ void opcontrol() {
 		rightMotor.move(0);
 	}
 
-	autonomous();
+	//autonomous();
 
 	while (true) {
 		// print to lcd screen
