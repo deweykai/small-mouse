@@ -93,10 +93,10 @@ void opcontrol() {
 		}
 
 		// control for the claw motor
-		if (btnOpen.isPressed()) {
+		if (btnClose.isPressed()) {
 			clawMotor.moveVoltage(12000);
-		} else if (btnClose.isPressed()) {
-			clawMotor.moveVoltage(-12000);
+		} else if (btnOpen.isPressed()) {
+			clawMotor.moveVoltage(-3000);
 		} else {
 			clawMotor.moveVoltage(0);
 		}
