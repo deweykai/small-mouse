@@ -23,6 +23,6 @@ void autonomous() {
         AbstractMotor::gearset::green,
         {WHEEL_DIAMETER, CHASSIS_WIDTH}
     );
-    
+
     drive.moveDistance(100_cm);
 }

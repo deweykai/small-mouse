@@ -55,11 +55,6 @@ void opcontrol() {
 	//autonomous();
 
 	while (true) {
-		// print to lcd screen
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-
 		// drive tank controls
 		{
 			using okapi::ControllerAnalog;
