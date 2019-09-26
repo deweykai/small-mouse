@@ -1,0 +1,37 @@
+
+src/initialize.cpp,111
+void on_center_button(3,19
+void initialize(19,424
+void disabled(31,778
+void competition_initialize(42,1143
+
+src/motors.cpp,238
+Motor driveRightMotor(-DRIVE_MOTOR_RIGHT)DRIVE_MOTOR_RIGHT8,96
+Motor liftLeftMotor(-LIFT_MOTOR_LEFT)LIFT_MOTOR_LEFT9,139
+Motor liftLeftLowerMotor(-LIFT_MOTOR_LEFT)LIFT_MOTOR_LEFT10,178
+Motor clawMotor(-CLAW_MOTOR)CLAW_MOTOR14,340
+
+src/opcontrol.cpp,101
+using okapi::ControllerButton;21,660
+using okapi::ControllerDigital;22,691
+void opcontrol(32,1070
+
+include/main.h,100
+#define _PROS_MAIN_H_16,427
+#define PROS_USE_SIMPLE_NAMES27,856
+#define PROS_USE_LITERALS35,1086
+
+include/motors.h,290
+#define MOTOR_H2,16
+const int DRIVE_MOTOR_RIGHT 7,67
+const int DRIVE_MOTOR_LEFT 8,100
+const int LIFT_MOTOR_RIGHT 9,132
+const int LIFT_MOTOR_LEFT 10,164
+const int LIFT_MOTOR_RIGHT_2 11,195
+const int LEFT_MOTOR_LEFT_2 12,229
+const int MIDDLE_MOTOR 13,262
+const int CLAW_MOTOR 14,290
+
+src/autonomous.cpp,include
+
+include/api.h,include

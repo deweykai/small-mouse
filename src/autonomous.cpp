@@ -24,5 +24,19 @@ void autonomous() {
         {WHEEL_DIAMETER, CHASSIS_WIDTH}
     );
 
-    drive.moveDistance(100_cm);
+    auto profileController = AsyncControllerFactory::motionProfile(
+        1.0,  // Maximum linear velocity of the Chassis in m/s
+        2.0,  // Maximum linear acceleration of the Chassis in m/s/s
+        10.0, // Maximum linear jerk of the Chassis in m/s/s/s
+        drive
+    );
+
+    profileController.generatePath({
+      Point{0_m, 0_m, 0_deg},
+      Point{50_cm, 50_cm, 0_deg}},
+      "A"
+    );
+
+    profileController.setTarget("A");
+    profileController.waitUntilSettled();
 }

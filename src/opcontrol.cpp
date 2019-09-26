@@ -26,6 +26,8 @@ ControllerButton resetLift(ControllerDigital::down);
 // buttons for claw
 ControllerButton btnOpen(ControllerDigital::R2);
 ControllerButton btnClose(ControllerDigital::R1);
+// button for autonomous
+ControllerButton btnAuto(ControllerDigital::A);
 
 void opcontrol() {
 	// drive controls
@@ -52,14 +54,17 @@ void opcontrol() {
 		rightMotor.move(0);
 	}
 
-	//autonomous();
-
 	while (true) {
 		// drive tank controls
 		{
 			using okapi::ControllerAnalog;
 			drive.tank(controller.getAnalog(ControllerAnalog::leftY),
 					controller.getAnalog(ControllerAnalog::rightY));
+		}
+
+		// autonomous
+		if (btnAuto.isPressed()) {
+			autonomous();
 		}
 
 		// move the middle motor
@@ -87,6 +92,14 @@ void opcontrol() {
 			liftMotorGroup.moveVoltage(1000);
 		}
 
+		// move forward/backward
+		if (master.get_digital(DIGITAL_UP)) {
+			// TODO
+			drive.forward(0.5);
+		} else if (master.get_digital(DIGITAL_DOWN)) {
+			drive.forward(-0.5);
+		}
+
 		// control for the claw motor
 		if (btnClose.isPressed()) {
 			clawMotor.moveVoltage(12000);
@@ -95,6 +108,9 @@ void opcontrol() {
 		} else {
 			clawMotor.moveVoltage(0);
 		}
+
+    master.clear_line(0);
+    master.print(0, 0, "Hello");
 
 		pros::delay(10);
 	}
