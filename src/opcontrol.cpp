@@ -17,16 +17,22 @@
  */
 
 // buttons
-using okapi::ControllerButton;
-using okapi::ControllerDigital;
+namespace btn {
+	using okapi::ControllerButton;
+	using okapi::ControllerDigital;
 
-// buttons for controlling lift
-ControllerButton btnUp(ControllerDigital::L1);
-ControllerButton btnDown(ControllerDigital::L2);
-ControllerButton resetLift(ControllerDigital::down);
+	// buttons for controlling lift
+	ControllerButton liftUp(ControllerDigital::L1);
+	ControllerButton liftDown(ControllerDigital::L2);
+	ControllerButton liftReset(ControllerDigital::X);
 
-// button for autonomous
-ControllerButton btnAuto(ControllerDigital::A);
+	// button for autonomous
+	ControllerButton autoRun(ControllerDigital::A);
+
+	// buttons for driving
+	ControllerButton driveForward(ControllerDigital::up);
+	ControllerButton driveBackward(ControllerDigital::down);
+}
 
 void opcontrol() {
 	// drive controls
@@ -54,27 +60,27 @@ void opcontrol() {
 		}
 
 		// autonomous
-		if (btnAuto.isPressed()) {
+		if (btn::autoRun.isPressed()) {
 			autonomous();
 		}
 
 		// logic for controlling lift with buttons
 		// manual control
-		if (btnUp.isPressed()) {
+		if (btn::liftUp.isPressed()) {
 			motors::liftGroup.moveVoltage(12000);
-		} else if (btnDown.isPressed()) {
+		} else if (btn::liftDown.isPressed()) {
 			motors::liftGroup.moveVoltage(-3000);
-		} else if (resetLift.isPressed()) {
+		} else if (btn::liftReset.isPressed()) {
 			motors::liftGroup.moveAbsolute(0, 60);
 		} else {
 			motors::liftGroup.moveVoltage(1000);
 		}
 
 		// move forward/backward
-		if (master.get_digital(DIGITAL_UP)) {
+		if (btn::driveForward.isPressed()) {
 			// TODO
 			drive.forward(0.5);
-		} else if (master.get_digital(DIGITAL_DOWN)) {
+		} else if (btn::driveBackward.isPressed()) {
 			drive.forward(-0.5);
 		}
 
