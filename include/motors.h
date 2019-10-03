@@ -20,6 +20,9 @@ namespace motors {
 
     // motor groups:
     extern okapi::MotorGroup liftGroup;
+
+    // init function:
+    void init();
 }
 
 #endif

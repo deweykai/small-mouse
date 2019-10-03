@@ -19,7 +19,7 @@ const auto CHASSIS_WIDTH = 37_cm;
 
 void autonomous() {
     auto drive = ChassisControllerFactory::create(
-        ports::DRIVE_MOTOR_LEFT, -ports::DRIVE_MOTOR_RIGHT,
+        motors::driveLeft, motors::driveRight,
         AbstractMotor::gearset::green,
         {WHEEL_DIAMETER, CHASSIS_WIDTH}
     );

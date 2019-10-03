@@ -37,7 +37,7 @@ namespace btn {
 void opcontrol() {
 	// drive controls
 	auto drive = okapi::ChassisControllerFactory::create(
-		ports::DRIVE_MOTOR_LEFT, -ports::DRIVE_MOTOR_RIGHT
+		motors::driveLeft, motors::driveRight
 	);
 
 	// joystick input

@@ -11,4 +11,9 @@ namespace motors {
 
     // motor groups
     MotorGroup liftGroup({liftLeft, liftRight});
+
+    // init function:
+    void init() {
+        liftGroup.setEncoderUnits(Motor::encoderUnits::rotations);
+    }
 }
