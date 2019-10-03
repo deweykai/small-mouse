@@ -2,16 +2,13 @@
 
 using namespace okapi;
 
-
 // motors
-Motor driveLeftMotor(DRIVE_MOTOR_LEFT);
-Motor driveRightMotor(-DRIVE_MOTOR_RIGHT);
-Motor liftLeftMotor(-LIFT_MOTOR_LEFT);
-Motor liftLeftLowerMotor(-LIFT_MOTOR_LEFT);
-Motor liftRightMotor(LIFT_MOTOR_RIGHT);
-Motor liftRightLowerMotor(LIFT_MOTOR_RIGHT);
-Motor middleMotor(MIDDLE_MOTOR);
-Motor clawMotor(-CLAW_MOTOR);
+namespace motors {
+    Motor driveLeft(ports::DRIVE_MOTOR_LEFT);
+    Motor driveRight(-ports::DRIVE_MOTOR_RIGHT);
+    Motor liftLeft(ports::LIFT_MOTOR_LEFT);
+    Motor liftRight(ports::LIFT_MOTOR_RIGHT);
 
-// motor groups
-MotorGroup liftMotorGroup({liftLeftMotor, liftRightMotor, liftLeftLowerMotor, liftRightLowerMotor});
+    // motor groups
+    MotorGroup liftGroup({liftLeft, liftRight});
+}
