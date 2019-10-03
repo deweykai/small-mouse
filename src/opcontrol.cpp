@@ -43,9 +43,6 @@ void opcontrol() {
 	// joystick input
 	okapi::Controller controller;
 
-	// defaults to master
-	pros::Controller master(CONTROLLER_MASTER);
-
 	// count of update cycles
 	int count = 0;
 
