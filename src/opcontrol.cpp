@@ -14,7 +14,7 @@
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-/*
+
 // motor ports
 namespace ports {
     const int DRIVE_LEFT = 1;
@@ -25,9 +25,9 @@ namespace ports {
 
 namespace motors {
     okapi::Motor driveLeft(ports::DRIVE_LEFT);
-    okapi::Motor driveRight(ports::DRIVE_RIGHT);
+    okapi::Motor driveRight(-ports::DRIVE_RIGHT);
     okapi::Motor liftLeft(ports::LIFT_LEFT);
-    okapi::Motor liftRight(ports::LIFT_RIGHT);
+    okapi::Motor liftRight(-ports::LIFT_RIGHT);
 
     // motor groups:
     okapi::MotorGroup liftGroup({liftLeft, liftRight});
@@ -57,6 +57,9 @@ void opcontrol() {
 		motors::driveLeft, motors::driveRight
 	);
 
+	int position = motors::liftGroup.getPosition();
+	bool frozen = false;
+
 	// joystick input
 	okapi::Controller controller;
 
@@ -81,13 +84,22 @@ void opcontrol() {
 		// logic for controlling lift with buttons
 		// manual control
 		if (btn::liftUp.isPressed()) {
-			motors::liftGroup.moveVoltage(12000);
+			motors::liftGroup.moveVelocity(40);
+			frozen = false;
 		} else if (btn::liftDown.isPressed()) {
-			motors::liftGroup.moveVoltage(-3000);
+			motors::liftGroup.moveVelocity(-20);
+			frozen = false;
 		} else if (btn::liftReset.isPressed()) {
+			// hold to reset
 			motors::liftGroup.moveAbsolute(0, 60);
+			frozen = false;
 		} else {
-			motors::liftGroup.moveVoltage(0);
+			// freeze
+			if (!frozen) {
+				position = motors::liftGroup.getPosition();
+				frozen = true;
+			}
+			motors::liftGroup.moveAbsolute(position, 5);
 		}
 
 		// move forward/backward
@@ -100,11 +112,4 @@ void opcontrol() {
 
 		pros::delay(10);
 	}
-}
-*/
-
-okapi::Motor motor(1);
-
-void opcontrol() {
-	motor.move_voltage(12000);
 }
