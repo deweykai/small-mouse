@@ -1,5 +1,4 @@
 #include "main.h"
-#include "motors.h"
 #include <string>
 
 /**
@@ -15,6 +14,24 @@
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+/*
+// motor ports
+namespace ports {
+    const int DRIVE_LEFT = 1;
+    const int DRIVE_RIGHT = 2;
+    const int LIFT_LEFT = 3;
+    const int LIFT_RIGHT = 4;
+};
+
+namespace motors {
+    okapi::Motor driveLeft(ports::DRIVE_LEFT);
+    okapi::Motor driveRight(ports::DRIVE_RIGHT);
+    okapi::Motor liftLeft(ports::LIFT_LEFT);
+    okapi::Motor liftRight(ports::LIFT_RIGHT);
+
+    // motor groups:
+    okapi::MotorGroup liftGroup({liftLeft, liftRight});
+};
 
 // buttons
 namespace btn {
@@ -70,7 +87,7 @@ void opcontrol() {
 		} else if (btn::liftReset.isPressed()) {
 			motors::liftGroup.moveAbsolute(0, 60);
 		} else {
-			motors::liftGroup.moveVoltage(1000);
+			motors::liftGroup.moveVoltage(0);
 		}
 
 		// move forward/backward
@@ -83,4 +100,11 @@ void opcontrol() {
 
 		pros::delay(10);
 	}
+}
+*/
+
+okapi::Motor motor(1);
+
+void opcontrol() {
+	motor.move_voltage(12000);
 }

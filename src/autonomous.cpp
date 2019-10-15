@@ -1,5 +1,4 @@
 #include "main.h"
-#include "motors.h"
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -13,11 +12,24 @@
  */
 using namespace okapi;
 
+/*
+namespace motors {
+    okapi::Motor driveLeft(ports::DRIVE_LEFT);
+    okapi::Motor driveRight(ports::DRIVE_RIGHT);
+    okapi::Motor liftLeft(ports::LIFT_LEFT);
+    okapi::Motor liftRight(ports::LIFT_RIGHT);
+
+    // motor groups:
+    okapi::MotorGroup liftGroup({liftLeft, liftRight});
+};
+*/
+
 // dimensions used for tracking position
 const auto WHEEL_DIAMETER = 10_cm;
 const auto CHASSIS_WIDTH = 37_cm;
 
 void autonomous() {
+    /*
     auto drive = ChassisControllerFactory::create(
         motors::driveLeft, motors::driveRight,
         AbstractMotor::gearset::green,
@@ -39,4 +51,5 @@ void autonomous() {
 
     profileController.setTarget("A");
     profileController.waitUntilSettled();
+    */
 }

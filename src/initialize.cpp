@@ -1,5 +1,4 @@
 #include "main.h"
-#include "motors.h"
 
 void on_center_button() {
 	static bool pressed = false;
@@ -22,7 +21,6 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
-	motors::init();
 }
 
 /**
