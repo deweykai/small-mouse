@@ -1,5 +1,4 @@
 #include "main.h"
-#include <string>
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -21,16 +20,26 @@ namespace ports {
     const int DRIVE_RIGHT = 2;
     const int LIFT_LEFT = 3;
     const int LIFT_RIGHT = 4;
+	const int LIFTER = 5;
 };
 
 namespace motors {
     okapi::Motor driveLeft(ports::DRIVE_LEFT);
-    okapi::Motor driveRight(-ports::DRIVE_RIGHT);
+    okapi::Motor driveRight(ports::DRIVE_RIGHT);
     okapi::Motor liftLeft(ports::LIFT_LEFT);
-    okapi::Motor liftRight(-ports::LIFT_RIGHT);
+    okapi::Motor liftRight(ports::LIFT_RIGHT);
+	okapi::Motor lifter(ports::LIFTER);
 
     // motor groups:
     okapi::MotorGroup liftGroup({liftLeft, liftRight});
+
+	void init() {
+        driveRight.setReversed(true);
+        liftRight.setReversed(true);
+
+        liftLeft.setGearing(okapi::Motor::gearset::red);
+        liftRight.setGearing(okapi::Motor::gearset::red);
+    }
 };
 
 // buttons
@@ -52,12 +61,15 @@ namespace btn {
 }
 
 void opcontrol() {
+	motors::init();
+
 	// drive controls
 	auto drive = okapi::ChassisControllerFactory::create(
 		motors::driveLeft, motors::driveRight
 	);
 
 	int position = motors::liftGroup.getPosition();
+	int max_height = 700;
 	bool frozen = false;
 
 	// joystick input
@@ -68,12 +80,16 @@ void opcontrol() {
 
 	while (true) {
 		count++;
+		printf("cycle: %d\n", count);
 		
 		// drive tank controls
 		{
 			using okapi::ControllerAnalog;
+			/*
 			drive.tank(controller.getAnalog(ControllerAnalog::leftY),
 					controller.getAnalog(ControllerAnalog::rightY));
+			*/
+			motors::lifter.moveVelocity(controller.getAnalog(ControllerAnalog::leftY) * 50);
 		}
 
 		// autonomous
@@ -83,10 +99,10 @@ void opcontrol() {
 
 		// logic for controlling lift with buttons
 		// manual control
-		if (btn::liftUp.isPressed()) {
+		if (btn::liftUp.isPressed() && motors::liftGroup.getPosition() < max_height) {
 			motors::liftGroup.moveVelocity(40);
 			frozen = false;
-		} else if (btn::liftDown.isPressed()) {
+		} else if (btn::liftDown.isPressed() && motors::liftGroup.getPosition() > 0) {
 			motors::liftGroup.moveVelocity(-20);
 			frozen = false;
 		} else if (btn::liftReset.isPressed()) {
@@ -101,6 +117,7 @@ void opcontrol() {
 			}
 			motors::liftGroup.moveAbsolute(position, 5);
 		}
+		printf("%d\n", motors::liftGroup.getVoltage());
 
 		// move forward/backward
 		if (btn::driveForward.isPressed()) {
@@ -111,5 +128,6 @@ void opcontrol() {
 		}
 
 		pros::delay(10);
+		printf("\n");
 	}
 }
