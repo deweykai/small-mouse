@@ -59,6 +59,10 @@ namespace btn {
 	// buttons for driving
 	ControllerButton driveForward(ControllerDigital::up);
 	ControllerButton driveBackward(ControllerDigital::down);
+    
+    // buttons for intake
+    ControllerButton intakeIn(ControllerDigital::R1);
+    ControllerButton intakeOut(ControllerDigital::R2);
 }
 
 void opcontrol() {
@@ -84,12 +88,18 @@ void opcontrol() {
 		// drive tank controls
 		{
 			using okapi::ControllerAnalog;
-			/*
 			drive.tank(controller.getAnalog(ControllerAnalog::leftY),
 					controller.getAnalog(ControllerAnalog::rightY));
-			*/
-			motors::lifter.moveVelocity(controller.getAnalog(ControllerAnalog::leftY) * 50);
 		}
+
+        // intake control
+        if (btn::intakeIn.isPressed()) {
+            motors::lifter.moveVoltage(12000);
+        } else if (btn::intakeOut.isPressed()) {
+            motors::lifter.moveVoltage(-12000);
+        } else {
+            motors::lifter.moveVoltage(0);
+        } 
 
 		// autonomous
 		if (btn::autoRun.isPressed()) {
