@@ -98,10 +98,10 @@ void opcontrol() {
 
 		// logic for controlling lift with buttons
 		// manual control
-		if (btn::liftUp.isPressed() && motors::liftGroup.getPosition() < max_height) {
-			motors::liftGroup.moveVelocity(40);
-		} else if (btn::liftDown.isPressed() && motors::liftGroup.getPosition() > 0) {
-			motors::liftGroup.moveVelocity(-20);
+		if (btn::liftUp.isPressed()) {
+            motors::liftGroup.moveAbsolute(max_height, 40);
+		} else if (btn::liftDown.isPressed()) {
+            motors::liftGroup.moveAbsolute(0, 20);
 		} else if (btn::liftReset.isPressed()) {
 			// hold to reset
 			motors::liftGroup.moveAbsolute(0, 60);
