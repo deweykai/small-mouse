@@ -40,6 +40,7 @@ namespace motors {
         liftLeft.setGearing(okapi::Motor::gearset::red);
         liftRight.setGearing(okapi::Motor::gearset::red);
         liftGroup.setBrakeMode(okapi::Motor::brakeMode::hold);
+		liftGroup.setCurrentLimit(liftGroup.getCurrentLimit() * 4 / 5);
     }
 };
 
