@@ -21,6 +21,7 @@ namespace ports {
     const int LIFT_LEFT = 3;
     const int LIFT_RIGHT = 4;
 	const int LIFTER = 5;
+	const int CENTER = 6;
 };
 
 namespace motors {
@@ -29,6 +30,7 @@ namespace motors {
     okapi::Motor liftLeft(ports::LIFT_LEFT);
     okapi::Motor liftRight(ports::LIFT_RIGHT);
 	okapi::Motor lifter(ports::LIFTER);
+	okapi::Motor center(ports::CENTER);
 
     // motor groups:
     okapi::MotorGroup liftGroup({liftLeft, liftRight});
@@ -40,7 +42,7 @@ namespace motors {
         liftLeft.setGearing(okapi::Motor::gearset::red);
         liftRight.setGearing(okapi::Motor::gearset::red);
         liftGroup.setBrakeMode(okapi::Motor::brakeMode::hold);
-		liftGroup.setCurrentLimit(liftGroup.getCurrentLimit() * 4 / 5);
+		liftGroup.setCurrentLimit(liftGroup.getCurrentLimit() * 4 /5);
     }
 };
 
@@ -60,6 +62,8 @@ namespace btn {
 	// buttons for driving
 	ControllerButton driveForward(ControllerDigital::up);
 	ControllerButton driveBackward(ControllerDigital::down);
+	ControllerButton driveLeft(ControllerDigital::left);
+	ControllerButton driveRight(ControllerDigital::right);
     
     // buttons for intake
     ControllerButton intakeIn(ControllerDigital::R1);
@@ -127,6 +131,15 @@ void opcontrol() {
 			drive.forward(0.5);
 		} else if (btn::driveBackward.isPressed()) {
 			drive.forward(-0.5);
+		}
+
+		// move left/right
+		if (btn::driveLeft.isPressed()) {
+			motors::center.moveVelocity(-80);
+		} else if (btn::driveRight.isPressed()) {
+			motors::center.moveVelocity(80);
+		} else {
+			motors::center.moveVelocity(0);
 		}
 
 		pros::delay(10);
