@@ -78,7 +78,7 @@ void opcontrol() {
 		motors::driveLeft, motors::driveRight
 	);
 
-	int max_height = 700;
+	int max_height = 725;
 
 	// joystick input
 	okapi::Controller controller;
