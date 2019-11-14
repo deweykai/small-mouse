@@ -41,7 +41,7 @@ namespace motors {
 
         liftLeft.setGearing(okapi::Motor::gearset::red);
         liftRight.setGearing(okapi::Motor::gearset::red);
-        liftGroup.setBrakeMode(okapi::Motor::brakeMode::hold);
+        //liftGroup.setBrakeMode(okapi::Motor::brakeMode::hold);
 		liftGroup.setCurrentLimit(liftGroup.getCurrentLimit() * 4 /5);
     }
 };
@@ -79,6 +79,8 @@ void opcontrol() {
 	);
 
 	int max_height = 725;
+	int position = 0;
+	bool frozen = false;
 
 	// joystick input
 	okapi::Controller controller;
@@ -115,13 +117,23 @@ void opcontrol() {
 		// manual control
 		if (btn::liftUp.isPressed()) {
             motors::liftGroup.moveAbsolute(max_height, 40);
+			frozen = false;
 		} else if (btn::liftDown.isPressed()) {
             motors::liftGroup.moveAbsolute(0, 20);
+			frozen = false;
 		} else if (btn::liftReset.isPressed()) {
 			// hold to reset
 			motors::liftGroup.moveAbsolute(0, 60);
+			frozen = false;
 		} else {
-            motors::liftGroup.moveVelocity(0);
+			if (frozen) {
+			} else {
+				frozen = true;
+				position = motors::liftGroup.getPosition();
+				
+			}
+			motors::liftGroup.moveAbsolute(position, 10);
+			motors::liftGroup.moveAbsolute(position, 10);
 		}
 		printf("%d\n", motors::liftGroup.getVoltage());
 
