@@ -10,22 +10,24 @@ const auto CHASSIS_WIDTH = 37_cm;
 namespace ports {
     const int DRIVE_LEFT = 1;
     const int DRIVE_RIGHT = 2;
-    const int LIFT_LEFT = 3;
-    const int LIFT_RIGHT = 4;
-	const int LIFTER = 5;
-	const int CENTER = 6;
+//    const int LIFT_LEFT = 3;
+//    const int LIFT_RIGHT = 4;
+//    const int INTAKE = 5;
+	const int CENTER = 10;
 };
 
 namespace motors {
-    okapi::Motor driveLeft(ports::DRIVE_LEFT);
-    okapi::Motor driveRight(ports::DRIVE_RIGHT);
+    Motor drive_left(ports::DRIVE_LEFT);
+    Motor drive_right(ports::DRIVE_RIGHT);
+
+	Motor center(ports::CENTER);
 
 	void init() {
     }
 };
 
 auto drive = ChassisControllerFactory::create(
-	motors::driveLeft, motors::driveRight,
+	motors::drive_left, motors::drive_right,
 	AbstractMotor::gearset::green,
 	{WHEEL_DIAMETER, CHASSIS_WIDTH}
 );
@@ -57,6 +59,7 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	motors::init();
 }
 
 /**
@@ -88,7 +91,25 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	motors::drive_left.move_voltage(12000);
+}
+
+void debug() {
+	static int count = 0;
+	count = (count + 1) % 200;
+	if (count != 0) {
+		return;
+	}
+
+	int current_draw = motors::drive_left.get_current_draw();
+	printf("motor: %d\n", current_draw);
+}
+
+namespace btn {
+	ControllerButton left (ControllerDigital::left);
+	ControllerButton right (ControllerDigital::right);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -107,10 +128,22 @@ void opcontrol() {
 	Controller master;
 
 	while (true) {
+		debug();
+
 		// tank controls
 		drive.tank(
 			master.getAnalog(ControllerAnalog::leftY),
 			master.getAnalog(ControllerAnalog::rightY)
 		);
+
+		if (btn::left.isPressed()) {
+			motors::center.move_voltage(12000);
+		} else if (btn::right.isPressed()) {
+			motors::center.move_voltage(-12000);
+		} else {
+			motors::center.move_voltage(0);
+		}
+
+		pros::delay(10);
 	}
 }
