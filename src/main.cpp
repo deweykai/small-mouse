@@ -1,10 +1,4 @@
 #include "main.h"
-#include "okapi/api.hpp"
-
-using namespace okapi;
-
-const auto WHEEL_DIAMETER = 10_cm;
-const auto CHASSIS_WIDTH = 37_cm;
 
 // motor ports
 namespace ports {
@@ -26,25 +20,20 @@ namespace motors {
     }
 };
 
-auto drive = ChassisControllerFactory::create(
+const auto WHEEL_DIAMETER = 10_cm;
+const auto CHASSIS_WIDTH = 38_cm;
+
+auto drive = okapi::ChassisControllerFactory::create(
 	motors::drive_left, motors::drive_right,
-	AbstractMotor::gearset::green,
+	okapi::AbstractMotor::gearset::green,
 	{WHEEL_DIAMETER, CHASSIS_WIDTH}
 );
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
+void debug(void* param) {
+	while (true) {
+		int current_draw = motors::drive_left.get_current_draw();
+		printf("motor: %d\n", current_draw);
+		pros::delay(500);
 	}
 }
 
@@ -55,11 +44,9 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
 	motors::init();
+	pros::Task debug_task(debug, NULL, "DEBUG");
+	pros::Task display(mouse_display::run_task, NULL, "display");
 }
 
 /**
@@ -95,17 +82,6 @@ void autonomous() {
 	motors::drive_left.move_voltage(12000);
 }
 
-void debug() {
-	static int count = 0;
-	count = (count + 1) % 200;
-	if (count != 0) {
-		return;
-	}
-
-	int current_draw = motors::drive_left.get_current_draw();
-	printf("motor: %d\n", current_draw);
-}
-
 namespace btn {
 	ControllerButton left (ControllerDigital::left);
 	ControllerButton right (ControllerDigital::right);
@@ -128,8 +104,6 @@ void opcontrol() {
 	Controller master;
 
 	while (true) {
-		debug();
-
 		// tank controls
 		drive.tank(
 			master.getAnalog(ControllerAnalog::leftY),
