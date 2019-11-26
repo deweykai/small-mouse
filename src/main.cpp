@@ -146,12 +146,7 @@ void opcontrol() {
 
 	int max_height = 2700;
 
-  pros::ADIMotor motor(2);
-
 	while (true) {
-
-    motor.set_value(127);
-
 		// tank controls
 		drive.tank(
                master.getAnalog(ControllerAnalog::leftY),
