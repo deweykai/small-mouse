@@ -144,6 +144,8 @@ namespace btn {
 void opcontrol() {
 	Controller master;
 
+  // the max height in terms of rotations
+  // uses a gear ratio of 1:25
 	int max_height = 2700;
 
 	while (true) {
@@ -153,6 +155,8 @@ void opcontrol() {
                master.getAnalog(ControllerAnalog::rightY)
                );
 
+
+    // strafe left and right
 		if (btn::left.isPressed()) {
 			motors::center.move_voltage(12000);
 		} else if (btn::right.isPressed()) {
@@ -161,6 +165,7 @@ void opcontrol() {
 			motors::center.move_voltage(0);
 		}
 
+    // move lift up and down
 		if (btn::lift_up.isPressed()) {
 			motors::lift_group.moveAbsolute(max_height, 200);
 		} else if (btn::lift_down.isPressed()) {
@@ -169,6 +174,7 @@ void opcontrol() {
 			motors::lift_group.moveVoltage(0);
 		}
 
+    // control intake in/out
 		if (btn::intake_in.isPressed()) {
 			motors::intake.moveVoltage(12000);
 		} else if (btn::intake_out.isPressed()) {
@@ -179,6 +185,7 @@ void opcontrol() {
 			motors::intake.moveVoltage(0);
 		}
 
+    // delay so other tasks can advance
 		pros::delay(10);
 	}
 }
