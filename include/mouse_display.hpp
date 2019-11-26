@@ -3,7 +3,9 @@
 
 namespace mouse_display {
 
-void run_task(void*);
+void start_display();
+
+void update_position(float x, float y);
 
 };
 
