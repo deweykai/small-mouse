@@ -6,10 +6,10 @@
 namespace ports {
   const int DRIVE_LEFT = 1;
   const int DRIVE_RIGHT = 2;
-  const int LIFT_LOW_LEFT = 3;
-  const int LIFT_LOW_RIGHT = 4;
-	const int LIFT_HIGH_LEFT = 5;
-	const int LIFT_HIGH_RIGHT = 6;
+  const int LIFT_LOW_LEFT = 11;
+  const int LIFT_LOW_RIGHT = 12;
+	const int LIFT_HIGH_LEFT = 13;
+	const int LIFT_HIGH_RIGHT = 14;
   const int INTAKE = 7;
 	const int CENTER = 10;
 };
@@ -29,7 +29,7 @@ namespace motors {
 	Motor intake(-ports::INTAKE);
 
 	// center motor
-	Motor center(ports::CENTER);
+	Motor center(-ports::CENTER);
 
 
 	MotorGroup lift_group ({lift_low_left, lift_low_right, lift_high_left, lift_high_right});
@@ -39,6 +39,7 @@ namespace motors {
 		lift_group.setBrakeMode(Motor::brakeMode::hold);
 
 		intake.setGearing(Motor::gearset::red);
+        intake.setBrakeMode(Motor::brakeMode::hold);
   }
 };
 
@@ -148,6 +149,10 @@ void opcontrol() {
   // uses a gear ratio of 1:25
 	int max_height = 2700;
 
+    // freeze position
+    bool frozen = false;
+    int position = 0;
+
 	while (true) {
 		// tank controls
 		drive.tank(
@@ -168,10 +173,16 @@ void opcontrol() {
     // move lift up and down
 		if (btn::lift_up.isPressed()) {
 			motors::lift_group.moveAbsolute(max_height, 200);
+            frozen = false;
 		} else if (btn::lift_down.isPressed()) {
 			motors::lift_group.moveAbsolute(0, 200);
+            frozen = false;
 		} else {
-			motors::lift_group.moveVoltage(0);
+            if (!frozen) {
+                frozen = true;
+                position = motors::lift_group.getPosition();
+            }
+            motors::lift_group.moveAbsolute(position, 5);
 		}
 
     // control intake in/out
