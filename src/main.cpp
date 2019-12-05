@@ -3,60 +3,62 @@
 /****************
  * motors setup
  * **************/
-namespace ports {
-  const int DRIVE_LEFT = 1;
-  const int DRIVE_RIGHT = 2;
-  const int LIFT_LOW_LEFT = 11;
-  const int LIFT_LOW_RIGHT = 12;
-	const int LIFT_HIGH_LEFT = 13;
-	const int LIFT_HIGH_RIGHT = 14;
-  const int INTAKE = 7;
-	const int CENTER = 10;
-};
+namespace ports
+{
+const int DRIVE_LEFT = 1;
+const int DRIVE_RIGHT = 2;
+const int LIFT_LOW_LEFT = 11;
+const int LIFT_LOW_RIGHT = 12;
+const int LIFT_HIGH_LEFT = 13;
+const int LIFT_HIGH_RIGHT = 14;
+const int INTAKE = 7;
+const int CENTER = 10;
+}; // namespace ports
 
-namespace motors {
-	// drive motors
-  Motor drive_left(ports::DRIVE_LEFT);
-  Motor drive_right(-ports::DRIVE_RIGHT);
+namespace motors
+{
+// drive motors
+Motor drive_left(ports::DRIVE_LEFT);
+Motor drive_right(-ports::DRIVE_RIGHT);
 
-	// lift motors
-	Motor lift_low_left(ports::LIFT_LOW_LEFT);
-	Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
-	Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
-	Motor lift_high_right(ports::LIFT_HIGH_RIGHT);
+// lift motors
+Motor lift_low_left(ports::LIFT_LOW_LEFT);
+Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
+Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
+Motor lift_high_right(ports::LIFT_HIGH_RIGHT);
 
-	// intake motor
-	Motor intake(-ports::INTAKE);
+// intake motor
+Motor intake(ports::INTAKE);
 
-	// center motor
-	Motor center(-ports::CENTER);
+// center motor
+Motor center(-ports::CENTER);
 
+MotorGroup lift_group({lift_low_left, lift_low_right, lift_high_left, lift_high_right});
 
-	MotorGroup lift_group ({lift_low_left, lift_low_right, lift_high_left, lift_high_right});
+void init()
+{
+	lift_group.setBrakeMode(Motor::brakeMode::hold);
 
-
-	void init() {
-		lift_group.setBrakeMode(Motor::brakeMode::hold);
-
-		intake.setGearing(Motor::gearset::red);
-        intake.setBrakeMode(Motor::brakeMode::hold);
-  }
-};
+	intake.setGearing(Motor::gearset::red);
+	intake.setBrakeMode(Motor::brakeMode::hold);
+}
+}; // namespace motors
 
 const auto WHEEL_DIAMETER = 10_cm;
 const auto CHASSIS_WIDTH = 38_cm;
 
 auto drive = okapi::ChassisControllerFactory::create(
-                                                     motors::drive_left, motors::drive_right,
-                                                     okapi::AbstractMotor::gearset::green,
-                                                     {WHEEL_DIAMETER, CHASSIS_WIDTH}
-                                                     );
+	motors::drive_left, motors::drive_right,
+	okapi::AbstractMotor::gearset::green,
+	{WHEEL_DIAMETER, CHASSIS_WIDTH});
 
 /**************
  * setup code
  **************/
-void debug(void* param) {
-	while (true) {
+void debug(void *param)
+{
+	while (true)
+	{
 		int current_draw = motors::drive_left.get_current_draw();
 		printf("motor: %d\n", current_draw);
 		pros::delay(500);
@@ -69,7 +71,8 @@ void debug(void* param) {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
+void initialize()
+{
 	// needs the delay to work on a normal orientation.
 	pros::delay(10);
 	mouse_display::start_display();
@@ -110,24 +113,26 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
+void autonomous()
+{
 	motors::drive_left.move_voltage(12000);
 }
 
-namespace btn {
-	// strafing
-	ControllerButton left (ControllerDigital::left);
-	ControllerButton right (ControllerDigital::right);
+namespace btn
+{
+// strafing
+ControllerButton left(ControllerDigital::left);
+ControllerButton right(ControllerDigital::right);
 
-	// lift
-	ControllerButton lift_up (ControllerDigital::L1);
-	ControllerButton lift_down (ControllerDigital::L2);
+// lift
+ControllerButton lift_up(ControllerDigital::L1);
+ControllerButton lift_down(ControllerDigital::L2);
 
-	// intake
-	ControllerButton intake_in(ControllerDigital::R1);
-	ControllerButton intake_out(ControllerDigital::R2);
-	ControllerButton stack(ControllerDigital::B);
-}
+// intake
+ControllerButton intake_in(ControllerDigital::R1);
+ControllerButton intake_out(ControllerDigital::R2);
+ControllerButton stack(ControllerDigital::B);
+} // namespace btn
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -142,61 +147,79 @@ namespace btn {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
+void opcontrol()
+{
 	Controller master;
 
-  // the max height in terms of rotations
-  // uses a gear ratio of 1:25
+	// the max height in terms of rotations
+	// uses a gear ratio of 1:25
 	int max_height = 2700;
 
-    // freeze position
-    bool frozen = false;
-    int position = 0;
+	// freeze position
+	bool frozen = false;
+	int position = 0;
 
-	while (true) {
+	while (true)
+	{
 		// tank controls
 		drive.tank(
-               master.getAnalog(ControllerAnalog::leftY),
-               master.getAnalog(ControllerAnalog::rightY)
-               );
+			master.getAnalog(ControllerAnalog::leftY),
+			master.getAnalog(ControllerAnalog::rightY));
 
-
-    // strafe left and right
-		if (btn::left.isPressed()) {
+		// strafe left and right
+		if (btn::left.isPressed())
+		{
 			motors::center.move_voltage(12000);
-		} else if (btn::right.isPressed()) {
+		}
+		else if (btn::right.isPressed())
+		{
 			motors::center.move_voltage(-12000);
-		} else {
+		}
+		else
+		{
 			motors::center.move_voltage(0);
 		}
 
-    // move lift up and down
-		if (btn::lift_up.isPressed()) {
+		// move lift up and down
+		if (btn::lift_up.isPressed())
+		{
 			motors::lift_group.moveAbsolute(max_height, 200);
-            frozen = false;
-		} else if (btn::lift_down.isPressed()) {
+			frozen = false;
+		}
+		else if (btn::lift_down.isPressed())
+		{
 			motors::lift_group.moveAbsolute(0, 200);
-            frozen = false;
-		} else {
-            if (!frozen) {
-                frozen = true;
-                position = motors::lift_group.getPosition();
-            }
-            motors::lift_group.moveAbsolute(position, 5);
+			frozen = false;
+		}
+		else
+		{
+			if (!frozen)
+			{
+				frozen = true;
+				position = motors::lift_group.getPosition();
+			}
+			motors::lift_group.moveAbsolute(position, 5);
 		}
 
-    // control intake in/out
-		if (btn::intake_in.isPressed()) {
+		// control intake in/out
+		if (btn::intake_in.isPressed())
+		{
 			motors::intake.moveVoltage(12000);
-		} else if (btn::intake_out.isPressed()) {
+		}
+		else if (btn::intake_out.isPressed())
+		{
 			motors::intake.moveVoltage(-12000);
-		} else if (btn::stack.isPressed()) {
+		}
+		else if (btn::stack.isPressed())
+		{
 			motors::intake.moveVelocity(-30);
-		} else {
+		}
+		else
+		{
 			motors::intake.moveVoltage(0);
 		}
 
-    // delay so other tasks can advance
+		// delay so other tasks can advance
 		pros::delay(10);
 	}
 }
