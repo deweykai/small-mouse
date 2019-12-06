@@ -5,7 +5,7 @@
         "target": "v5",
         "templates": {
             "kernel": {
-                "location": "/Users/KAIS41/Library/Application Support/PROS/templates/kernel@3.2.0",
+                "location": "/Users/deweykai/Library/Application Support/PROS/templates/kernel@3.2.0",
                 "metadata": {
                     "cold_addr": "58720256",
                     "cold_output": "bin/cold.package.bin",
@@ -149,7 +149,7 @@
                 "version": "3.2.0"
             },
             "okapilib": {
-                "location": "/Users/KAIS41/Library/Application Support/PROS/templates/okapilib@3.3.13",
+                "location": "/Users/deweykai/Library/Application Support/PROS/templates/okapilib@3.3.13",
                 "metadata": {
                     "origin": "pros-mainline"
                 },
