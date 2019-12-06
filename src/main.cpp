@@ -33,6 +33,7 @@ Motor intake(-ports::INTAKE);
 // center motor
 Motor center(-ports::CENTER);
 
+// motor groups
 MotorGroup lift_group({/*lift_low_left, lift_low_right,*/ lift_high_left, lift_high_right});
 
 void init()
@@ -116,7 +117,7 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-	motors::drive_left.move_voltage(12000);
+	drive.moveDistance(50_cm);
 }
 
 namespace btn
@@ -126,8 +127,10 @@ ControllerButton left(ControllerDigital::left);
 ControllerButton right(ControllerDigital::right);
 
 // lift
-ControllerButton lift_up(ControllerDigital::L1);
-ControllerButton lift_down(ControllerDigital::L2);
+ControllerButton lift_up_left(ControllerDigital::L1);
+ControllerButton lift_down_left(ControllerDigital::L2);
+ControllerButton lift_up_right(ControllerDigital::R1);
+ControllerButton lift_down_right(ControllerDigital::R2);
 
 // intake
 ControllerButton intake_in(ControllerDigital::R1);
@@ -136,6 +139,9 @@ ControllerButton stack(ControllerDigital::B);
 
 // test autonomous
 ControllerButton auto_test(ControllerDigital::A);
+
+// readjust
+ControllerButton readjust(ControllerDigital::down);
 } // namespace btn
 
 /**
@@ -165,6 +171,11 @@ void opcontrol()
 
 	while (true)
 	{
+		if (btn::readjust.changedToReleased())
+		{
+			motors::lift_group.tarePosition();
+		}
+
 		/**** DRIVE ****/
 		drive.tank(
 			master.getAnalog(ControllerAnalog::leftY),
@@ -191,42 +202,65 @@ void opcontrol()
 		}
 
 		/**** LIFT CONTROLS ****/
-		if (btn::lift_up.isPressed())
+		if (btn::readjust.isPressed())
 		{
-			motors::lift_group.moveAbsolute(max_height, 200);
-			frozen = false;
-		}
-		else if (btn::lift_down.isPressed())
-		{
-			motors::lift_group.moveAbsolute(0, 200);
-			frozen = false;
-		}
-		else
-		{
-			if (!frozen)
+			if (btn::lift_up_left.isPressed())
 			{
-				frozen = true;
-				position = motors::lift_group.getPosition();
+				motors::lift_high_left.moveVoltage(12000);
 			}
-			motors::lift_group.moveVoltage(0);
-		}
+			else if (btn::lift_down_left.isPressed())
+			{
+				motors::lift_high_left.moveVoltage(-12000);
+			}
 
-		/**** INTAKE ****/
-		if (btn::intake_in.isPressed())
-		{
-			motors::intake.moveVoltage(12000);
-		}
-		else if (btn::intake_out.isPressed())
-		{
-			motors::intake.moveVoltage(-12000);
-		}
-		else if (btn::stack.isPressed())
-		{
-			motors::intake.moveVelocity(-30);
+			if (btn::lift_up_right.isPressed())
+			{
+				motors::lift_high_right.moveVoltage(12000);
+			}
+			else if (btn::lift_down_right.isPressed())
+			{
+				motors::lift_high_right.moveVoltage(-12000);
+			}
 		}
 		else
 		{
-			motors::intake.moveVoltage(0);
+			if (btn::lift_up_left.isPressed())
+			{
+				motors::lift_group.moveAbsolute(max_height, 200);
+				frozen = false;
+			}
+			else if (btn::lift_down_left.isPressed())
+			{
+				motors::lift_group.moveAbsolute(0, 200);
+				frozen = false;
+			}
+			else
+			{
+				if (!frozen)
+				{
+					frozen = true;
+					position = motors::lift_group.getPosition();
+				}
+				motors::lift_group.moveVoltage(0);
+			}
+
+			/**** INTAKE ****/
+			if (btn::intake_in.isPressed())
+			{
+				motors::intake.moveVoltage(12000);
+			}
+			else if (btn::intake_out.isPressed())
+			{
+				motors::intake.moveVoltage(-12000);
+			}
+			else if (btn::stack.isPressed())
+			{
+				motors::intake.moveVelocity(-30);
+			}
+			else
+			{
+				motors::intake.moveVoltage(0);
+			}
 		}
 
 		// delay so other tasks can advance
