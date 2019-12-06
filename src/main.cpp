@@ -37,6 +37,7 @@ MotorGroup lift_group({lift_low_left, lift_low_right, lift_high_left, lift_high_
 
 void init()
 {
+	lift_group.setBrakeMode(Motor::brakeMode::brake);
 	intake.setGearing(Motor::gearset::red);
 	intake.setBrakeMode(Motor::brakeMode::hold);
 }
@@ -205,7 +206,7 @@ void opcontrol()
 				frozen = true;
 				position = motors::lift_group.getPosition();
 			}
-			motors::lift_group.moveAbsolute(position, 5);
+			motors::lift_group.moveVoltage(0);
 		}
 
 		/**** INTAKE ****/
