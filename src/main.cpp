@@ -18,14 +18,14 @@ const int CENTER = 10;
 namespace motors
 {
 // drive motors
-Motor drive_left(ports::DRIVE_LEFT);
+Motor drive_left(+ports::DRIVE_LEFT);
 Motor drive_right(-ports::DRIVE_RIGHT);
 
 // lift motors
-Motor lift_low_left(ports::LIFT_LOW_LEFT);
+Motor lift_low_left(+ports::LIFT_LOW_LEFT);
 Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
 Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
-Motor lift_high_right(ports::LIFT_HIGH_RIGHT);
+Motor lift_high_right(+ports::LIFT_HIGH_RIGHT);
 
 // intake motor
 Motor intake(-ports::INTAKE);
