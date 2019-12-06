@@ -38,6 +38,8 @@ MotorGroup lift_group({lift_low_left, lift_low_right, lift_high_left, lift_high_
 void init()
 {
 	lift_group.setBrakeMode(Motor::brakeMode::brake);
+	lift_group.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
+
 	intake.setGearing(Motor::gearset::red);
 	intake.setBrakeMode(Motor::brakeMode::hold);
 }
