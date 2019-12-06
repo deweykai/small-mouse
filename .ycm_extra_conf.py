@@ -3,7 +3,7 @@ import ycm_core
 flags = [
     '-Wall',
     '-Werror',
-    '-std=c++11',
+    '-std=c++17',
     '-x',
     'c++',
     '-I',
