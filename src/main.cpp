@@ -28,7 +28,7 @@ Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
 Motor lift_high_right(ports::LIFT_HIGH_RIGHT);
 
 // intake motor
-Motor intake(ports::INTAKE);
+Motor intake(-ports::INTAKE);
 
 // center motor
 Motor center(-ports::CENTER);
