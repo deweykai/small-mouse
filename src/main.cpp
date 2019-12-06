@@ -7,8 +7,8 @@ namespace ports
 {
 const int DRIVE_LEFT = 1;
 const int DRIVE_RIGHT = 2;
-const int LIFT_LOW_LEFT = 11;
-const int LIFT_LOW_RIGHT = 12;
+//const int LIFT_LOW_LEFT = 11;
+//const int LIFT_LOW_RIGHT = 12;
 const int LIFT_HIGH_LEFT = 13;
 const int LIFT_HIGH_RIGHT = 14;
 const int INTAKE = 7;
@@ -22,8 +22,8 @@ Motor drive_left(+ports::DRIVE_LEFT);
 Motor drive_right(-ports::DRIVE_RIGHT);
 
 // lift motors
-Motor lift_low_left(+ports::LIFT_LOW_LEFT);
-Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
+//Motor lift_low_left(+ports::LIFT_LOW_LEFT);
+//Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
 Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
 Motor lift_high_right(+ports::LIFT_HIGH_RIGHT);
 
@@ -33,7 +33,7 @@ Motor intake(-ports::INTAKE);
 // center motor
 Motor center(-ports::CENTER);
 
-MotorGroup lift_group({lift_low_left, lift_low_right, lift_high_left, lift_high_right});
+MotorGroup lift_group({/*lift_low_left, lift_low_right,*/ lift_high_left, lift_high_right});
 
 void init()
 {
