@@ -37,8 +37,6 @@ MotorGroup lift_group({lift_low_left, lift_low_right, lift_high_left, lift_high_
 
 void init()
 {
-	lift_group.setBrakeMode(Motor::brakeMode::hold);
-
 	intake.setGearing(Motor::gearset::red);
 	intake.setBrakeMode(Motor::brakeMode::hold);
 }
@@ -132,6 +130,9 @@ ControllerButton lift_down(ControllerDigital::L2);
 ControllerButton intake_in(ControllerDigital::R1);
 ControllerButton intake_out(ControllerDigital::R2);
 ControllerButton stack(ControllerDigital::B);
+
+// test autonomous
+ControllerButton auto_test(ControllerDigital::A);
 } // namespace btn
 
 /**
@@ -161,12 +162,18 @@ void opcontrol()
 
 	while (true)
 	{
-		// tank controls
+		/**** DRIVE ****/
 		drive.tank(
 			master.getAnalog(ControllerAnalog::leftY),
 			master.getAnalog(ControllerAnalog::rightY));
 
-		// strafe left and right
+		/**** AUTONOMOUS ****/
+		if (btn::auto_test.isPressed())
+		{
+			autonomous();
+		}
+
+		/**** MIDDLE MOTOR ****/
 		if (btn::left.isPressed())
 		{
 			motors::center.move_voltage(12000);
@@ -180,7 +187,7 @@ void opcontrol()
 			motors::center.move_voltage(0);
 		}
 
-		// move lift up and down
+		/**** LIFT CONTROLS ****/
 		if (btn::lift_up.isPressed())
 		{
 			motors::lift_group.moveAbsolute(max_height, 200);
@@ -201,7 +208,7 @@ void opcontrol()
 			motors::lift_group.moveAbsolute(position, 5);
 		}
 
-		// control intake in/out
+		/**** INTAKE ****/
 		if (btn::intake_in.isPressed())
 		{
 			motors::intake.moveVoltage(12000);
