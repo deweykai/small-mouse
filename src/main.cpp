@@ -167,7 +167,7 @@ void opcontrol()
 			master.getAnalog(ControllerAnalog::rightY));
 
 		/**** AUTONOMOUS ****/
-		if (btn::auto_test.isPressed())
+		if (btn::auto_test.isPressed() && !pros::competition::is_connected())
 		{
 			autonomous();
 		}
