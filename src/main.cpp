@@ -11,7 +11,10 @@ const int DRIVE_RIGHT = 2;
 //const int LIFT_LOW_RIGHT = 12;
 const int LIFT_HIGH_LEFT = 13;
 const int LIFT_HIGH_RIGHT = 14;
-const int INTAKE = 7;
+
+const int INTAKE_LEFT = 7;
+const int INTAKE_RIGHT = 8;
+
 const int CENTER = 10;
 }; // namespace ports
 
@@ -28,21 +31,23 @@ Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
 Motor lift_high_right(+ports::LIFT_HIGH_RIGHT);
 
 // intake motor
-Motor intake(-ports::INTAKE);
+Motor intake_left(-ports::INTAKE_LEFT);
+Motor intake_right(+ports::INTAKE_RIGHT);
 
 // center motor
 Motor center(-ports::CENTER);
 
 // motor groups
 MotorGroup lift_group({/*lift_low_left, lift_low_right,*/ lift_high_left, lift_high_right});
+MotorGroup intake_group({intake_left, intake_right});
 
 void init()
 {
 	lift_group.setBrakeMode(Motor::brakeMode::brake);
 	lift_group.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
 
-	intake.setGearing(Motor::gearset::red);
-	intake.setBrakeMode(Motor::brakeMode::hold);
+	intake_group.setGearing(Motor::gearset::red);
+	intake_group.setBrakeMode(Motor::brakeMode::hold);
 }
 }; // namespace motors
 
@@ -79,7 +84,7 @@ void initialize()
 	pros::delay(10);
 	mouse_display::start_display();
 	motors::init();
-	//pros::Task debug_task(debug, NULL, "DEBUG");
+	pros::Task debug_task(debug, NULL, "DEBUG");
 }
 
 /**
@@ -117,6 +122,7 @@ void competition_initialize() {}
  */
 void autonomous()
 {
+	drive.moveDistance(-50_cm);
 	drive.moveDistance(50_cm);
 }
 
@@ -171,10 +177,11 @@ void opcontrol()
 
 	while (true)
 	{
+		/*
 		if (btn::readjust.changedToReleased())
 		{
 			motors::lift_group.tarePosition();
-		}
+		}/*
 
 		/**** DRIVE ****/
 		drive.tank(
@@ -247,19 +254,19 @@ void opcontrol()
 			/**** INTAKE ****/
 			if (btn::intake_in.isPressed())
 			{
-				motors::intake.moveVoltage(12000);
+				motors::intake_group.moveVoltage(12000);
 			}
 			else if (btn::intake_out.isPressed())
 			{
-				motors::intake.moveVoltage(-12000);
+				motors::intake_group.moveVoltage(-12000);
 			}
 			else if (btn::stack.isPressed())
 			{
-				motors::intake.moveVelocity(-30);
+				motors::intake_group.moveVelocity(-30);
 			}
 			else
 			{
-				motors::intake.moveVoltage(0);
+				motors::intake_group.moveVoltage(0);
 			}
 		}
 
