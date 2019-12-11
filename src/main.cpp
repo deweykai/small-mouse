@@ -36,10 +36,14 @@ MotorGroup intake_group({intake_left, intake_right});
 // setup motors
 void init()
 {
+	/* the brake mode for the lift and intake are set to brake to prevent the
+	 * lift and intake from moving when they should be stopped.
+	 * The current for the lift_group is limited to 80% to help prevent them
+	 * from overheating.
+	 */
 	lift_group.setBrakeMode(Motor::brakeMode::brake);
 	lift_group.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
 
-	intake_group.setGearing(Motor::gearset::red);
 	intake_group.setBrakeMode(Motor::brakeMode::hold);
 }
 }; // namespace motors
@@ -57,6 +61,10 @@ auto drive = okapi::ChassisControllerFactory::create(
  **************/
 void debug(void *param)
 {
+	/* The debug should be run as a seperate task.
+	 * every 500 ms or 0.5 secs, the debug information will be printed to
+	 * the terminal
+	 */
 	while (true)
 	{
 		int current_draw = motors::drive_left.get_current_draw();
@@ -115,6 +123,11 @@ void competition_initialize() {}
  */
 void autonomous()
 {
+	/* This autonomous will move the robot backwards, pushing a block into the
+	 * score zone.
+	 * Then is will move forward. When the robot stops, the forward momentum will
+	 * make the intake fold out
+	 */
 	drive.moveDistance(-50_cm);
 	drive.moveDistance(50_cm);
 }
@@ -161,18 +174,31 @@ void opcontrol()
 
 	while (true)
 	{
-		/**** DRIVE ****/
+		/* DRIVE
+		 * the drive.take method takes two parameters:
+		 * movement for the left side
+		 * movement for the right side
+		 */
 		drive.tank(
 			master.getAnalog(ControllerAnalog::leftY),
 			master.getAnalog(ControllerAnalog::rightY));
 
-		/**** AUTONOMOUS ****/
+		/* AUTONOMOUS
+		 * this allows for testing of autonomous
+		 * a check is preformed so that autonomous can only be called when
+		 * the controller is not connected
+		 */
 		if (btn::auto_test.isPressed() && !pros::competition::is_connected())
 		{
 			autonomous();
 		}
 
-		/**** LIFT CONTROLS ****/
+		/* LIFT CONTROLS
+		 * There is a lift_up and lift_down button
+		 * if the lift is moving up, it moves towards the specified max height
+		 * if the lift is moving down, it moves towards the zero position
+		 * if no button is pressed, the lift holds position.
+		 */
 		if (btn::lift_up.isPressed())
 		{
 			motors::lift_group.moveAbsolute(max_height, 200);
@@ -186,7 +212,11 @@ void opcontrol()
 			motors::lift_group.moveVoltage(0);
 		}
 
-		/**** INTAKE ****/
+		/* INTAKE
+		 * The intake has three buttons: intake_in, intake_out, stack
+		 * the stack button is used to slowly release blocks from the intake.
+		 * if no buttons are pressed the intake should hold its position.
+		 */
 		if (btn::intake_in.isPressed())
 		{
 			motors::intake_group.moveVoltage(12000);
