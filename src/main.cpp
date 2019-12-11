@@ -7,15 +7,12 @@ namespace ports
 {
 const int DRIVE_LEFT = 1;
 const int DRIVE_RIGHT = 2;
-//const int LIFT_LOW_LEFT = 11;
-//const int LIFT_LOW_RIGHT = 12;
-const int LIFT_HIGH_LEFT = 13;
-const int LIFT_HIGH_RIGHT = 14;
+
+const int LIFT_LEFT = 11;
+const int LIFT_RIGHT = 12;
 
 const int INTAKE_LEFT = 7;
 const int INTAKE_RIGHT = 8;
-
-const int CENTER = 10;
 }; // namespace ports
 
 namespace motors
@@ -25,22 +22,18 @@ Motor drive_left(+ports::DRIVE_LEFT);
 Motor drive_right(-ports::DRIVE_RIGHT);
 
 // lift motors
-//Motor lift_low_left(+ports::LIFT_LOW_LEFT);
-//Motor lift_low_right(-ports::LIFT_LOW_RIGHT);
-Motor lift_high_left(-ports::LIFT_HIGH_LEFT);
-Motor lift_high_right(+ports::LIFT_HIGH_RIGHT);
+Motor lift_high_left(-ports::LIFT_LEFT);
+Motor lift_high_right(+ports::LIFT_RIGHT);
 
 // intake motor
 Motor intake_left(-ports::INTAKE_LEFT);
 Motor intake_right(+ports::INTAKE_RIGHT);
 
-// center motor
-Motor center(-ports::CENTER);
-
 // motor groups
-MotorGroup lift_group({/*lift_low_left, lift_low_right,*/ lift_high_left, lift_high_right});
+MotorGroup lift_group({lift_high_left, lift_high_right});
 MotorGroup intake_group({intake_left, intake_right});
 
+// setup motors
 void init()
 {
 	lift_group.setBrakeMode(Motor::brakeMode::brake);
@@ -192,20 +185,6 @@ void opcontrol()
 		if (btn::auto_test.isPressed())
 		{
 			autonomous();
-		}
-
-		/**** MIDDLE MOTOR ****/
-		if (btn::left.isPressed())
-		{
-			motors::center.move_voltage(12000);
-		}
-		else if (btn::right.isPressed())
-		{
-			motors::center.move_voltage(-12000);
-		}
-		else
-		{
-			motors::center.move_voltage(0);
 		}
 
 		/**** LIFT CONTROLS ****/
