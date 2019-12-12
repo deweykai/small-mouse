@@ -22,15 +22,15 @@ Motor drive_left(+ports::DRIVE_LEFT);
 Motor drive_right(-ports::DRIVE_RIGHT);
 
 // lift motors
-Motor lift_high_left(-ports::LIFT_LEFT);
-Motor lift_high_right(+ports::LIFT_RIGHT);
+Motor lift_left(-ports::LIFT_LEFT);
+Motor lift_right(+ports::LIFT_RIGHT);
 
 // intake motor
-Motor intake_left(-ports::INTAKE_LEFT);
-Motor intake_right(+ports::INTAKE_RIGHT);
+Motor intake_left(+ports::INTAKE_LEFT);
+Motor intake_right(-ports::INTAKE_RIGHT);
 
 // motor groups
-MotorGroup lift_group({lift_high_left, lift_high_right});
+MotorGroup lift_group({lift_left, lift_right});
 MotorGroup intake_group({intake_left, intake_right});
 
 // setup motors
@@ -41,10 +41,13 @@ void init()
 	 * The current for the lift_group is limited to 80% to help prevent them
 	 * from overheating.
 	 */
-	lift_group.setBrakeMode(Motor::brakeMode::brake);
-	lift_group.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
+	lift_left.setBrakeMode(Motor::brakeMode::brake);
+	lift_left.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
+	lift_right.setBrakeMode(Motor::brakeMode::brake);
+	lift_right.setCurrentLimit(lift_group.getCurrentLimit() * 0.8);
 
-	intake_group.setBrakeMode(Motor::brakeMode::hold);
+	intake_left.setBrakeMode(Motor::brakeMode::brake);
+	intake_right.setBrakeMode(Motor::brakeMode::brake);
 }
 }; // namespace motors
 
