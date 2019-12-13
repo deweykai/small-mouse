@@ -1,0 +1,41 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "pros: build",
+            "command": "/Users/KAIS41/miniconda3/envs/pros/bin/prosv5",
+            "args": [
+                "make"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "pros: upload",
+            "command": "/Users/KAIS41/miniconda3/envs/pros/bin/prosv5",
+            "args": [
+                "upload"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "pros: make and upload",
+            "command": "/Users/KAIS41/miniconda3/envs/pros/bin/prosv5",
+            "args": [
+                "mu"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "pros: terminal",
+            "command": "/Users/KAIS41/miniconda3/envs/pros/bin/prosv5",
+            "args": [
+                "terminal"
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}
